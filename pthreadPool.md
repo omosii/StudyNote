@@ -6,7 +6,7 @@
 - 线程池中有任务队列与工作队列，可以实现**任务缓冲处理**
 
 ## 线程池框架
-### 一、线程池结构体（类）
+### 一、线程池管理结构体（类）
 ```c
 typedef struct NWORKQUEUE {
 	struct NWORKER *workers;
@@ -74,20 +74,20 @@ typedef struct NWORKER {
 	struct NWORKER *next;
 } nWorker;
 ```
-#### 线程ID
+#### 1. 线程ID
 - 线程创建时：
   ```c
   // 参数：PID、NULL、线程回调函数、线程参数
   int ret = pthread_create(&worker->thread, NULL, ntyWorkerThread, (void *)worker);
   ```
-#### 终止信号
+#### 2. 终止信号
 - 线程通过参数`(void *)worker`获取`terminate`
 - 检测到`terminate`为终止值时：
   ```c
   free(worker);// 释放该线程对应的结构体
   pthread_exit(NULL); // 退出线程
   ```
-#### 线程池指针
+#### 3. 线程池指针
 - 让该工作结构体能够获取线程池中的共享资源与互斥锁、条件变量等
 
 ### 三、任务队列结构体（类）
@@ -99,22 +99,49 @@ typedef struct NJOB {
 	struct NJOB *next;
 } nJob;
 ```
-#### 回调函数
+#### 1. 回调函数
 - C 中的回调函数指针：
-	- 定义：`返回值 （*指针名）（参数列表）`,e.g.`void (*job_function)(struct NJOB *job);`
-	- 赋值:`指针名=函数名` `job->job_function = king_counter;`
-	    ```c
-		void king_counter(nJob *job) {
-			int index = *(int*)job->user_data;
-			printf("index : %d, selfid : %lu\n", index, pthread_self());
-			free(job->user_data);
-			free(job);
+	- 定义：`返回值类型 (*指针名)(参数列表)`,e.g.`void (*job_function)(struct NJOB *job);`
+	- 赋值: ` 指针名 = 函数名 `  ` job->job_function = king_counter; `
+	```c
+	void king_counter(nJob *job) {}
+	```
+    - 回调函数经典用法：
+      ```c
+      	#include <stdio.h>
+		// 定义回调函数原型
+		typedef int (*CallbackFunction)(int, int);
+		// 实现回调函数
+		int add(int a, int b) {
+		    return a + b;
 		}
-	    ```
-- C++ 中的回调函数指针：
-#### 用户数据
+		// 实现接收回调函数的函数
+		int perform_operation(CallbackFunction callback, int a, int b) {
+		    return callback(a, b);
+		}
+		int main() {
+		    int result = perform_operation(add, 3, 5);
+		    printf("The result of the operation is: %d\n", result);
+		    return 0;
+		}
+      ```
+- C++ 中的回调函数常见用法： 1. 普通函数作为回调函数  2. 类的静态成员函数作为回调函数  3. 使用std::function和std::bind  4. 使用 lambda 表达式作为回调函数
+#### 2. 用户数据
 - 保存任务内容，可自行设计
 
+### 四、线程池创建函数
+
+### 五、线程池删除函数
+
+### 六、工作线程函数
+
+### 六、任务添加函数
+
+### 七、线程池运行逻辑
+- 声明线程池管理结构体，定义最大线程数与最大任务数
+- 创建线程池，每个线程回调函数轮询访问任务队列，执行任务
+- 获取任务，并加入任务队列，通知此时有任务
+- 终止时，释放工作线程资源、退出线程
 
 
 
