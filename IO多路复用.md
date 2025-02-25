@@ -2,6 +2,7 @@
 - **多线程/多进程**：适合**CPU密集型**任务，如计算、数据处理等。
 - **I/O多路复用**：适合**I/O密集型**任务，如网络服务器、实时通信等。
 - 本笔记将简要介绍几种I/O多路复用方式，主要介绍`epoll`模式
+- 
 ## 一、为什么要用I/O多路复用（对比多线/进程）
 ### 1. 资源占用与**效率**:
   - I/O 多路复用：I/O 多路复用允许在一个线程内同时**监控多个文件描述符**（或套接字）的 I/O 事件。通过一个线程就可以处理多个并发的 I/O 操作，在**处理大量连接但 I/O 活动并不频繁的场景**下，资源占用少，系统开销小，能更高效地利用系统资源。
@@ -45,6 +46,7 @@ I/O多路复用允许单线程或单进程同时监控多个I/O操作，常见�
 
 ### 4. kqueue（BSD/macOS）
   - 性能：与 `epoll` 相当，适合高并发场景。
+    
 ## 三、Epoll
 这一部分将会介绍Epoll编程流程
 ### 1. 创建套接字链接
@@ -97,9 +99,9 @@ ev.events = EPOLLIN;      // 打算让epoll监视listensock的读事件。  EPOL
                 }
                 else{
                     // 如果客户端有报文发过来。
-                    printf("recv(eventfd=%d):%s\n",evs[ii].data.fd,buffer);
+                    printf("recv (eventfd = %d): %s\n", evs[ii].data.fd, buffer);
                     // 把接收到的报文内容原封不动的发回去。
-                    send(evs[ii].data.fd,buffer,strlen(buffer),0);
+                    send(evs[ii].data.fd, buffer, strlen(buffer), 0); // strlen(buffer)表示字符数组的实际长度；send中的0表示，默认阻塞接收，但发送缓冲区一般不会阻塞
                 }
             }
 
