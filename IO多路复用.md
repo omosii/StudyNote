@@ -46,7 +46,64 @@ I/O多路复用允许单线程或单进程同时监控多个I/O操作，常见�
 ### 4. kqueue（BSD/macOS）
   - 性能：与 `epoll` 相当，适合高并发场景。
 ## 三、Epoll
-### 1. 
+这一部分将会介绍Epoll编程流程
+### 1. 创建套接字链接
+  - 语句：`int listensock = initserver(atoi(argv[1]))` listensock是一个套接字文件描述符
+### 2. 创建epoll句柄(这里的句柄就是epoll的文件描述符)
+  - 语句：`int epollfd = epoll_create(1)`
+  - 作用：创建一个epoll实例（句柄），即是一个epoll文件描述符
+  - 参数：Linux 2.6.3之后随便填，大于0即可
+### 3. 为服务端的listensock准备读事件
+```CXX
+epoll_event ev;              // 声明事件的数据结构。
+ev.data.fd = listensock;   // ev.data是一个union联合体，指定事件的自定义数据，会随着epoll_wait()返回的事件一并返回。
+// ev.data.ptr = (void*)"超女";   // 指定事件的自定义数据，会随着epoll_wait()返回的事件一并返回。
+ev.events = EPOLLIN;      // 打算让epoll监视listensock的读事件。  EPOLLOUT为写事件
+```
+### 4. 把需要监听的socket和事件加入epollfd中
+  - 语句：`epoll_ctl(epollfd, EPOLL_CTL_ADD, listensock, &ev);`
+  - 参数：epoll实例（句柄）、EPOLL_CTL_ADD（添加）、需要监听的**socket**、epoll_event地址（监听的**事件**）
+### 5. 开辟epoll_event结构体数组存放epoll返回的事件
+  - 语句：`epoll_event evs[10];`
+  - 参数决定性能，可大可小
+### 6. 准备工作结束，进入循环
+  - 等待监视的socket有事件发生
+    - 语句：`int infds = epoll_wait(epollfd, evs, 10, -1);`
+    - 参数：epoll实例（句柄）、存放epoll返回的事件的结构体、结构体的大小、超时时间（非负的毫秒数，-1表示不启用）
+    - 返回值：表示 events 数组中**有效的事件数量**。例如，如果返回值是 3，则表示 events 数组的**前 3 个元素**包含了发生 I/O 事件的文件描述符的相关信息。（带来遍历性能的提升？）
+  - 遍历`ii = 0~infds`, 处理事件请求
+```CXX
+           if (evs[ii].data.fd==listensock) {
+                struct sockaddr_in client;
+                socklen_t len = sizeof(client);
+                int clientsock = accept(listensock, (struct sockaddr*)&client, &len); // 从已连接队列中将客户端的socket取出
+                printf ("accept client(socket=%d) ok.\n",clientsock);
+                // 为新客户端准备读事件，并添加到epoll中。
+                ev.data.fd = clientsock;
+                ev.events = EPOLLIN;
+                epoll_ctl(epollfd, EPOLL_CTL_ADD, clientsock, &ev);
+            }
+           else
+            {
+                // 如果是客户端连接的socke有事件，表示有报文发过来或者连接已断开。
+                char buffer[1024]; // 存放从客户端读取的数据。
+                memset(buffer,0,sizeof(buffer));
+                if (recv(evs[ii].data.fd, buffer, sizeof(buffer), 0) <= 0){  // recv中的0表示，默认阻塞接收
+                    // 如果客户端的连接已断开。
+                    printf("client (eventfd = %d) disconnected.\n",evs[ii].data.fd);
+                    close(evs[ii].data.fd);            // 关闭客户端的socket
+                    // 从epollfd中删除客户端的socket，如果socket被关闭了，会自动从epollfd中删除，所以，以下代码不必启用。
+                    // epoll_ctl(epollfd, EPOLL_CTL_DEL, evs[ii].data.fd, 0);     
+                }
+                else{
+                    // 如果客户端有报文发过来。
+                    printf("recv(eventfd=%d):%s\n",evs[ii].data.fd,buffer);
+                    // 把接收到的报文内容原封不动的发回去。
+                    send(evs[ii].data.fd,buffer,strlen(buffer),0);
+                }
+            }
+
+```
 ## 四、Epoll代码
 ```CXX
 
