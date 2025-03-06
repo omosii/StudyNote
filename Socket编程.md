@@ -12,9 +12,11 @@ Socket编程分为TCP与UDP
     - 参数：1、通讯的协议家族 `AF_INET(IPv4)`、 `AF_INET6(IPv6)`   2、数据传输的类型  SOCK_STREAM（面向连接的socket）、 SOCK_DGRAM（无连接的socket）   3、最终使用的协议  不用管，填0即可，编译器会自动推到
   - 绑定套接字`bind()`：创建套接字结构体，指定服务器自身IP、端口、协议，进而配置套接字实体。
     - 在绑定套接字之前，需要创建套接字结构体 `struct sockaddr_in servaddr;` 使用时需要转为通用的数据类型，即`(struct sockaddr *) &servaddr`。另一方面，需要注意**IP与端口**需要从**主机小端序**转为**网络大端序**
-    - servaddr.sin_family = AF_INET;        // 指定协议。
-    - servaddr.sin_addr.s_addr = htonl(INADDR_ANY); // 服务端任意网卡的IP都可以用于通讯。  
-    - servaddr.sin_port = htons(atoi(argv[1]));     // 指定通信端口，普通用户只能用1024以上的端口。
+      ```CXX
+      servaddr.sin_family = AF_INET;        // 指定协议。
+      servaddr.sin_addr.s_addr = htonl(INADDR_ANY); // 服务端任意网卡的IP都可以用于通讯。  
+      servaddr.sin_port = htons(atoi(argv[1]));     // 指定通信端口，普通用户只能用1024以上的端口。
+      ```CXX
     - 函数使用：`bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr))`, 失败返回-1，errno被设置。
   - 监听套接字`listen()`：监听套接字实体
     - 函数使用：`listen(listenfd, 5) != 0 `
