@@ -16,7 +16,7 @@ Socket编程分为TCP与UDP
       servaddr.sin_family = AF_INET;        // 指定协议。
       servaddr.sin_addr.s_addr = htonl(INADDR_ANY); // 服务端任意网卡的IP都可以用于通讯。  
       servaddr.sin_port = htons(atoi(argv[1]));     // 指定通信端口，普通用户只能用1024以上的端口。
-      ```CXX
+      ```
     - 函数使用：`bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr))`, 失败返回-1，errno被设置。
   - 监听套接字`listen()`：监听套接字实体
     - 函数使用：`listen(listenfd, 5) != 0 `
