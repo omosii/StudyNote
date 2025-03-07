@@ -1,0 +1,23 @@
+# 自我介绍
+# 介绍一下Python上位机项目
+# 介绍一下`static`关键字在 C++ 中的作用？如果在一个头文件中声明并定义了一个`static`全局变量，会有什么问题？
+# 进程中的地址空间分为哪些区域？堆内存一般如何分配，有哪些注意事项？
+# 智能指针有哪些，作用是什么？底层如何实现对指针的自动释放？
+# 手撕1：判断以下输出结果（8 8 16）：
+```CXX
+class A1 {
+		virtual int testA1() {};
+	};
+	class A2 {
+		virtual int testA2() {};
+	};
+
+	class B : public A1,A2 {
+		virtual int testA1() override {};
+		virtual int testA2() {};
+	};
+
+	cout << "sizeof(A1): " << sizeof(A1) << " sizeof(A2):" << sizeof(A2) << " sizeof(B):" << sizeof(B) << endl;
+```
+# 手撕2：最长递增子序列（不要求连续）：动态规划
+# 手撕3：按照计算器逻辑计算一串字符串的值，e.g. `1 + 2 * (5 + 60) + 2 * 4 + 5`
