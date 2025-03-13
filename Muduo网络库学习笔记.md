@@ -94,8 +94,22 @@ void Logger::printLog(std::string msg)
     return logger;
   }
 ```
-
-
+### 日志宏的实现
+- 日志宏提供给开发者便捷的日志输出语句，使用格式化字符串的方式大大减少了日志输出的工作量
+- 日志宏提供四种日志输出，分别为 `LOG_INFO(logmsgFormat, ...)`、`LOG_ERROR(logmsgFormat, ...)`、`LOG_FATAL(logmsgFormat, ...)`、`LOG_DEBUG(logmsgFormat, ...)`  可将其定义在 Logger.h 头文件中。需要使用日志宏时直接包含头文件即可
+  - `LOG_INFO(logmsgFormat, ...)`如下，其余同理
+```CXX
+#define LOG_INFO(logmsgFormat, ...)\    // ...代表任意多个参数
+  do                                                        \
+  {                                                         \
+    Logger& logger = Logger::instance();                    \  // 获取 唯一实例
+    logger.setLogLevel(INFO);                               \  // 设置等级
+    char buf[1024] = {0};                                   \  // 准备字符串数组
+    snprintf(buf, 1024, logmsgFormat, ##__VA_ARGS__);       \  // 填充字符串数组
+    logger.printLog(buf);                                   \  // 打印buf内容，char* 隐式转换为 std::string
+  }while(0)                                                 \
+```
+- `LOG_INFO(logmsgFormat, ...)`如下，其余同理
 
 
 
