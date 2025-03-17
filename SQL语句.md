@@ -31,3 +31,49 @@ limit 0, 2  // 这里的0 2 分别是返回的起始行号 返回的行数   如
 - 如果只填一个参数，就是返回的最大行数 `e.g. limit 2`
 
 ### 将查询后的列重新命名
+```sql
+select
+device_id as user_infos_example
+from user_profile
+limit 2
+```
+- `as` 起别名关键字
+
+### 查找学校是北大的学生信息
+```sql
+select
+device_id, university	
+from user_profile
+where university = "北京大学"
+```
+- `where` 范围限定关键字
+### 查找年龄大于24岁的用户信息
+```sql
+select
+device_id, gender, age, university
+from user_profile
+where age is not null and age > 24 //  age is not null 是保守起见
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
