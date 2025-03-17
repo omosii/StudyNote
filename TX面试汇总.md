@@ -16,6 +16,17 @@
     - 绑定对象：只能绑定右值，如临时对象、字面量、函数返回值等
     - 转移方式：将资源的**管理权**从右值“转移”到新对象，避免不必要的复制。
   - 应用场景：移动语义（`std::move()`，用于回调函数移动、独占指针所有权移动等）、完美转发等
+    - 完美转发中的不是一般的右值引用，而是万能引用。给`wrapper`传递什么类型的参数，在`typename T`中就会有记录。`std::forward`可根据`T`决定`arg`应被转换成左值还是右值。
+		```CXX
+		template<typename T>
+		void wrapper(T&& arg) {
+		    some_function(std::forward<T>(arg));
+		}
+		
+		int a = 10;
+		wrapper(a); // std::forward返回左值
+		wrapper(10);// std::forward返回右值。如果不用std::forward，some_function只可能接收到左值
+```
 ## 3.6 一面
 ### 一、自我介绍
 ### 二、介绍一下Python上位机项目
