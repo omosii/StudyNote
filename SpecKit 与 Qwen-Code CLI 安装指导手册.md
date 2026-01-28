@@ -19,7 +19,7 @@
 | **Node.js 20+** | Qwen-Code CLI 的运行环境 | [官网下载](https://nodejs.org/) 或通过 Homebrew (`brew install node`) |
 
 ### 1. 安装**Python 3.11+**
-- 我使用的旧版的ubuntu20.04，所以只能编译安装，新版的Linux系统可以选择直接下载安装或使用 deadsnakes PPA 安装
+- 我使用的旧版的ubuntu20.04，所以只能编译安装，新版的Linux系统可以选择直接下载安装或使用 deadsnakes PPA 安装：
 ```bash
 # 编译安装
 
@@ -41,8 +41,19 @@ make -j $(nproc)
 # 4. 安装（不会覆盖系统 Python）
 sudo make altinstall
 
+# 首先确认已安装的 Python 版本位置
+ls -la /usr/local/bin/python*
+
+# 假设您的 Python 3.11 安装在 /usr/local/bin/python3.11
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 2
+
+# 配置默认版本
+sudo update-alternatives --config python
 ```
 
+- 但实际上如果更改系统默认python可能引起系统不稳定，所以还是尽量升级系统
+  
 ```bash
 # 使用 deadsnakes PPA 安装
 
