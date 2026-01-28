@@ -18,6 +18,49 @@
 | **Git** | 版本控制工具 | [官网下载](https://git-scm.com/downloads) |
 | **Node.js 20+** | Qwen-Code CLI 的运行环境 | [官网下载](https://nodejs.org/) 或通过 Homebrew (`brew install node`) |
 
+### 1. 安装**Python 3.11+**
+- 我使用的旧版的ubuntu20.04，所以只能编译安装，新版的Linux系统可以选择直接下载安装或使用 deadsnakes PPA 安装
+```bash
+# 编译安装
+
+# 1. 安装编译依赖
+sudo apt update
+sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev \
+    libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
+
+# 2. 下载 Python 3.11 源码（以 3.11.10 为例）
+cd /tmp
+wget https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz
+tar -xf Python-3.11.10.tgz
+cd Python-3.11.10
+
+# 3. 配置并编译（--enable-optimizations 提升性能）
+./configure --enable-optimizations --prefix=/usr/local
+make -j $(nproc)
+
+# 4. 安装（不会覆盖系统 Python）
+sudo make altinstall
+
+```
+
+```bash
+# 使用 deadsnakes PPA 安装
+
+sudo apt update # 更新包列表
+
+sudo apt install software-properties-common # 安装必要的依赖
+
+sudo add-apt-repository ppa:deadsnakes/ppa # 添加 deadsnakes PPA
+
+sudo apt update # 再次更新包列表
+
+sudo apt install python3.11 # 安装 Python 3.11
+
+sudo apt install python3.11-pip # 安装 pip（如果需要）
+
+sudo apt install python3.11-dev python3.11-venv # 安装其他有用的工具
+``` 
+
 > 💡 **提示**：Windows 用户无需 WSL，PowerShell 脚本已原生支持。
 
 ---
