@@ -72,6 +72,14 @@ sudo apt install python3.11-pip # 安装 pip（如果需要）
 sudo apt install python3.11-dev python3.11-venv # 安装其他有用的工具
 ``` 
 
+### 2. 安装uv
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh # 安装
+
+source $HOME/.local/bin/env # 刷新环境
+
+uv --version # 验证安装结果
+``` 
 > 💡 **提示**：Windows 用户无需 WSL，PowerShell 脚本已原生支持。
 
 ---
