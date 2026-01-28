@@ -27,27 +27,21 @@
 sudo apt update
 sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev \
     libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
-
 # 2. 下载 Python 3.11 源码（以 3.11.10 为例）
 cd /tmp
 wget https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz
 tar -xf Python-3.11.10.tgz
 cd Python-3.11.10
-
 # 3. 配置并编译（--enable-optimizations 提升性能）
 ./configure --enable-optimizations --prefix=/usr/local
 make -j $(nproc)
-
 # 4. 安装（不会覆盖系统 Python）
 sudo make altinstall
-
 # 首先确认已安装的 Python 版本位置
 ls -la /usr/local/bin/python*
-
 # 假设您的 Python 3.11 安装在 /usr/local/bin/python3.11
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
 sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 2
-
 # 配置默认版本
 sudo update-alternatives --config python
 ```
@@ -83,6 +77,27 @@ uv --version # 验证安装结果
 > 💡 **提示**：Windows 用户无需 WSL，PowerShell 脚本已原生支持。
 
 ---
+
+### 3. 下载与配置Git
+```bash
+sudo apt install git
+
+git --version
+
+git config --global user.name "你的用户名"
+git config --global user.email "你的邮箱@example.com"
+```
+
+### 4. 下载**Node.js 20+**
+```bash
+# 添加 NodeSource 仓库密钥
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# 安装 Node.js 20+
+sudo apt install -y nodejs
+#验证
+node --version
+npm --version
+```
 
 ## 二、安装 SpecKit
 
